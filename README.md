@@ -75,7 +75,9 @@ class MainOffersCarouselTableViewCell: UITableViewCell {
 extension MainOffersCarouselTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout { func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { return cardColors.count }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MainOffersCarouselCollectionViewCell", for: indexPath) as! MainOffersCarouselCollectionViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MainOffersCarouselCollectionViewCell", for: indexPath) as? MainOffersCarouselCollectionViewCell else {
+            return UICollectionViewCell()
+        }
         cell.backgroundColor = cardColors[indexPath.item]
         return cell
     }
