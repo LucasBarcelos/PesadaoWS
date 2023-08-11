@@ -12,7 +12,7 @@ class ViewController: UIViewController {
 
     func setupTableView() {
         tableView = UITableView(frame: view.bounds, style: .plain)
-        tableView.register(TableViewCell.self, forCellReuseIdentifier: "TableViewCell")
+        tableView.register(MainOffersCarouselTableViewCell.self, forCellReuseIdentifier: "MainOffersCarouselTableViewCell")
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
@@ -25,7 +25,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath) as! TableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MainOffersCarouselTableViewCell", for: indexPath) as! MainOffersCarouselTableViewCell
         return cell
     }
 
@@ -37,7 +37,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-class TableViewCell: UITableViewCell {
+class MainOffersCarouselTableViewCell: UITableViewCell {
 
     var collectionView: UICollectionView!
     var pageControl: UIPageControl!
@@ -58,7 +58,7 @@ class TableViewCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let collectionViewHeight: CGFloat = UIScreen.main.bounds.width - 40 // Make the cell square
+        let collectionViewHeight: CGFloat = UIScreen.main.bounds.width - 40
 
         collectionView.frame = CGRect(x: 20, y: 20, width: contentView.bounds.width - 40, height: collectionViewHeight)
         pageControl.frame = CGRect(x: 0, y: collectionView.frame.maxY + 20, width: contentView.bounds.width, height: 16)
@@ -77,13 +77,13 @@ class TableViewCell: UITableViewCell {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.isPagingEnabled = false // Disable paging
-        collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: "CollectionViewCell")
+        collectionView.isPagingEnabled = false
+        collectionView.register(MainOffersCarouselCollectionViewCell.self, forCellWithReuseIdentifier: "MainOffersCarouselCollectionViewCell")
         contentView.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor), // No trailing constraint
+            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             collectionView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
@@ -105,17 +105,17 @@ class TableViewCell: UITableViewCell {
         ])
 
         pageControl.numberOfPages = cardColors.count
-        pageControl.isUserInteractionEnabled = false // Desativa a interação com o UIPageControl
+        pageControl.isUserInteractionEnabled = false
     }
 }
 
-extension TableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension MainOffersCarouselTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return cardColors.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MainOffersCarouselCollectionViewCell", for: indexPath) as! MainOffersCarouselCollectionViewCell
         cell.backgroundColor = cardColors[indexPath.item]
         return cell
     }
@@ -125,7 +125,6 @@ extension TableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, U
         if let indexPath = collectionView.indexPathForItem(at: centerPoint) {
             pageControl.currentPage = indexPath.item
             
-            // Adjust for the last card
             if indexPath.item == cardColors.count - 1 {
                 collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
             } else {
@@ -133,7 +132,6 @@ extension TableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, U
             }
         }
         else {
-            // Calculate nearest index for center and adjust the content offset to center the card
             let centerOffsetX = scrollView.contentOffset.x + scrollView.bounds.width / 2
             let centerIndex = Int(centerOffsetX / contentView.bounds.width)
             
@@ -141,14 +139,12 @@ extension TableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, U
             scrollView.setContentOffset(CGPoint(x: newOffsetX, y: 0), animated: true)
             pageControl.currentPage = centerIndex
             
-            // Scroll to the centered card with a snapping effect
             collectionView.scrollToItem(at: IndexPath(item: centerIndex, section: 0), at: .centeredHorizontally, animated: true)
         }
     }
-
 }
 
-class CollectionViewCell: UICollectionViewCell {
+class MainOffersCarouselCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -160,7 +156,7 @@ class CollectionViewCell: UICollectionViewCell {
     }
 
     private func commonInit() {
-        layer.cornerRadius = 10 // Define o valor do raio de arredondamento
-        layer.masksToBounds = true // Garante que o conteúdo dentro da célula não ultrapasse as bordas arredondadas
+        layer.cornerRadius = 10
+        layer.masksToBounds = true
     }
 }
