@@ -90,9 +90,6 @@ class MainOffersCarouselCollectionViewCell: UICollectionViewCell, WayViewCode {
 }
 
 
-
-
-
 class MainOffersCarouselTableViewCell: UITableViewCell {
     
     var collectionView: UICollectionView!
@@ -203,8 +200,6 @@ extension MainOffersCarouselTableViewCell: UICollectionViewDelegate, UICollectio
 
 
 
-
-
 class NewInteractOffersView: UIView, WayViewCode {
 
     // MARK: - Properties
@@ -276,7 +271,6 @@ class NewInteractOffersView: UIView, WayViewCode {
         ])
     }
 }
-
 
 
 class NewInteractOffersViewController: UIViewController  {
