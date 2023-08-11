@@ -1,3 +1,129 @@
+class NewInteractOffersView: UIView, WayViewCode {
+
+    // MARK: - Properties
+    private lazy var mainView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .santanderRed()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .wayWhite
+        view.layerCornerRadius = 10
+        view.layer.masksToBounds = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        return tableView
+    }()
+    
+    // MARK: - Inits
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.setupBackground()
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Methods
+    func setupBackground() {
+        self.backgroundColor = .wayWhite
+    }
+    
+    func buildViewHierarchy() {
+        self.addSubview(self.mainView)
+        self.addSubview(self.contentView)
+        self.addSubview(self.tableView)
+    }
+    
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            
+            mainView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            mainView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            mainView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            mainView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor),
+            
+            //contentView
+            contentView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: +10),
+            
+            // tableView
+            tableView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+}
+
+
+
+class NewInteractOffersViewController: UIViewController  {
+
+    // MARK: - Properties
+    var offersScreen: NewInteractOffersView?
+
+    override func loadView() {
+        self.offersScreen = NewInteractOffersView()
+        self.view = self.offersScreen
+    }
+    
+    // MARK: - View Life Cycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.title = "Ofertas"
+        
+        // Define a cor da navigation bar
+        navigationController?.navigationBar.barTintColor = .santanderRed()
+        self.navigationController?.navigationBar.isTranslucent = false
+        navigationController?.wayStandardNavigationController()
+        
+        setupTableView()
+    }
+    
+    // MARK: - Methods
+    func setupTableView() {
+        self.offersScreen?.tableView = UITableView(frame: view.bounds, style: .plain)
+        self.offersScreen?.tableView.register(MainOffersCarouselTableViewCell.self, forCellReuseIdentifier: "MainOffersCarouselTableViewCell")
+        self.offersScreen?.tableView.delegate = self
+        self.offersScreen?.tableView.dataSource = self
+    }
+}
+
+extension NewInteractOffersViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MainOffersCarouselTableViewCell", for: indexPath) as! MainOffersCarouselTableViewCell
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let collectionViewHeight: CGFloat = UIScreen.main.bounds.width - 40 // Make the cell square
+        let pageControlHeight: CGFloat = 16
+        let cellHeight = collectionViewHeight + pageControlHeight + 40
+        return cellHeight
+    }
+}
+
+
+
 import UIKit
 
 class MainOffersCarouselTableViewCell: UITableViewCell {
@@ -72,12 +198,14 @@ class MainOffersCarouselTableViewCell: UITableViewCell {
     }
 }
 
-extension MainOffersCarouselTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout { func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { return cardColors.count }
+extension MainOffersCarouselTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return cardColors.count
+    }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MainOffersCarouselCollectionViewCell", for: indexPath) as? MainOffersCarouselCollectionViewCell else {
-            return UICollectionViewCell()
-        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MainOffersCarouselCollectionViewCell", for: indexPath) as! MainOffersCarouselCollectionViewCell
         cell.backgroundColor = cardColors[indexPath.item]
         return cell
     }
@@ -107,4 +235,90 @@ extension MainOffersCarouselTableViewCell: UICollectionViewDelegate, UICollectio
 }
 
 
-Cannot convert return expression of type 'MainOffersCarouselCollectionViewCell' to return type 'UICollectionViewCell'
+
+class MainOffersCarouselCollectionViewCell: UIView, WayViewCode {
+
+    // MARK: - Properties
+    static var identifier: String {
+        return "MainOffersCarouselCollectionViewCell"
+    }
+    
+    private lazy var mainView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var backgroundImage: UIImageView = {
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.contentMode = .scaleAspectFit
+        return image
+    }()
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = WayFont.SFProDisplay.bold.font(size: 18)
+        label.textColor = .wayWhite
+        return label
+    }()
+    
+    private lazy var subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = WayFont.SFProDisplay.regular.font(size: 14)
+        label.textColor = .wayWhite
+        return label
+    }()
+    
+    // MARK: - Inits
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Methods
+    func buildViewHierarchy() {
+        self.addSubview(self.mainView)
+        self.mainView.addSubview(self.backgroundImage)
+        self.mainView.addSubview(self.titleLabel)
+        self.mainView.addSubview(self.subtitleLabel)
+    }
+    
+    func setupAdditionalConfiguration() {
+        self.mainView.layer.cornerRadius = 10
+        self.mainView.layer.masksToBounds = true
+    }
+    
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            
+            // mainView
+            mainView.topAnchor.constraint(equalTo: self.topAnchor),
+            mainView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            mainView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            mainView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            
+            // backgroundImage
+            backgroundImage.topAnchor.constraint(equalTo: self.topAnchor),
+            backgroundImage.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            backgroundImage.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            backgroundImage.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            
+            // titleLabel
+            titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 16),
+            titleLabel.bottomAnchor.constraint(equalTo: self.subtitleLabel.topAnchor, constant: 8),
+            
+            // subtitleLabel
+            subtitleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            subtitleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            subtitleLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -24)
+        ])
+    }
+}
