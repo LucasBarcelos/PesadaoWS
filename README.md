@@ -1,19 +1,29 @@
-func setupConstraints() {
-        NSLayoutConstraint.activate([
-            // titleLabel
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let centerPoint = CGPoint(x: scrollView.contentOffset.x + scrollView.bounds.width / 2, y: scrollView.bounds.height / 2)
+        if let indexPath = collectionView.indexPathForItem(at: centerPoint) {
+            pageControl.currentPage = indexPath.item
             
-            // subtitleLabel
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            if indexPath.item == cardColors.count - 1 {
+                // último card: ajusta o trailing para centralizar
+                let lastItemWidth = collectionView.bounds.width - contentView.bounds.width + 20
+                let offset = (collectionView.bounds.width - lastItemWidth) / 2
+                collectionView.contentInset = UIEdgeInsets(top: 0, left: offset, bottom: 0, right: offset)
+            } else {
+                // restaura o trailling nos demais cards
+                collectionView.contentInset = UIEdgeInsets.zero
+            }
             
-            // collectionView
-            collectionView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 8),
-            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
-            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
-        ])
+            // centraliza o card selecionado
+            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        }
+        else {
+            let centerOffsetX = scrollView.contentOffset.x + scrollView.bounds.width / 2
+            let centerIndex = Int(centerOffsetX / contentView.bounds.width)
+            
+            let newOffsetX = CGFloat(centerIndex) * contentView.bounds.width
+            scrollView.setContentOffset(CGPoint(x: newOffsetX, y: 0), animated: true)
+            pageControl.currentPage = centerIndex
+            
+            collectionView.scrollToItem(at: IndexPath(item: centerIndex, section: 0), at: .centeredHorizontally, animated: true)
+        }
     }
