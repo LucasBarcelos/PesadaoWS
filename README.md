@@ -337,166 +337,19 @@ class MainOffersCarouselCollectionViewCell: UICollectionViewCell, WayViewCode {
 
 
 
-class OffersSantanderCollectionViewCell: UICollectionViewCell, WayViewCode {
-    
-    // MARK: - Properties
-    static let identifier = "OffersSantanderCollectionViewCell"
-    
-    lazy var mainView: UIView = {
-        let view = UIView()
-        view.layer.cornerRadius = 8
-        view.layer.masksToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private lazy var backgroundImage: UIImageView = {
-        let image = UIImageView()
-        image.translatesAutoresizingMaskIntoConstraints = false
-        image.contentMode = .scaleAspectFit
-        return image
-    }()
-    
-    // MARK: - Inits
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - Methods
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        backgroundImage.image = nil
-    }
-    
-    func buildViewHierarchy() {
-        addSubview(mainView)
-        mainView.addSubview(backgroundImage)
-    }
-    
-    func setupConstraints() {
-        NSLayoutConstraint.activate([
-            // mainView
-            mainView.topAnchor.constraint(equalTo: topAnchor),
-            mainView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            mainView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            mainView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
-            // backgroundImage
-            backgroundImage.topAnchor.constraint(equalTo: mainView.topAnchor),
-            backgroundImage.leadingAnchor.constraint(equalTo: mainView.leadingAnchor),
-            backgroundImage.trailingAnchor.constraint(equalTo: mainView.trailingAnchor),
-            backgroundImage.bottomAnchor.constraint(equalTo: mainView.bottomAnchor)
-        ])
-    }
-}
+private lazy var collectionView: UICollectionView = {
+    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+    collectionView.translatesAutoresizingMaskIntoConstraints = false
+    collectionView.showsHorizontalScrollIndicator = false
+    collectionView.delegate = self
+    collectionView.dataSource = self
+    collectionView.register(OffersSantanderCollectionViewCell.self, forCellWithReuseIdentifier: OffersSantanderCollectionViewCell.identifier)
+    return collectionView
+}()
 
 
-
-
-
-
-
-
-
-
-
-
-
-class OffersSantanderTableViewCell: UITableViewCell {
-    
-    // MARK: - Properties
-    let layout = UICollectionViewFlowLayout()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.boldSystemFont(ofSize: 18)
-        label.text = "Ofertas Santander"
-        label.textColor = .white
-        return label
-    }()
-    
-    private lazy var subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Quem é Way, pode mais. Confira condições especiais."
-        label.textColor = .white
-        return label
-    }()
-    
-    private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView()
-        
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 10
-        layout.itemSize = CGSize(width: 162, height: 182)
-
-        collectionView.collectionViewLayout = layout
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(OffersSantanderTableViewCell.self, forCellWithReuseIdentifier: "OffersSantanderTableViewCell")
-    }()
-    
-    var cardColors: [UIColor] = [.red, .green, .blue, .orange, .purple]
-    
-    // MARK: - inits
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupSubviews()
-        setupConstraints()
-        setupCollectionView()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - Methods
-    func setupSubviews() {
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(subtitleLabel)
-        contentView.addSubview(collectionView)
-    }
-    
-    func setupConstraints() {
-        NSLayoutConstraint.activate([
-            // titleLabel
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            // subtitleLabel
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            // collectionView
-            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            collectionView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 8),
-            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
-        ])
-    }
-}
-
-// MARK: - Extensions
-extension OffersSantanderTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return cardColors.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "OffersSantanderCollectionViewCell", for: indexPath) as! OffersSantanderCollectionViewCell
-        cell.mainView.backgroundColor = cardColors[indexPath.item]
-        return cell
-    }
+func setupSubviews() {
+    contentView.addSubview(titleLabel)
+    contentView.addSubview(subtitleLabel)
+    contentView.addSubview(collectionView) // Add collectionView to contentView
 }
