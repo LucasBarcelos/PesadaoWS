@@ -322,3 +322,146 @@ extension NewInteractOffersViewController: UITableViewDataSource, UITableViewDel
         return cellHeight
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class MainOffersCarouselTableViewCell: UITableViewCell {
+    
+    var titleLabel: UILabel!
+    var subtitleLabel: UILabel!
+    var collectionView: UICollectionView!
+    
+    let cardWidth: CGFloat = 162
+    let cardHeight: CGFloat = 182
+    
+    let cardColors: [UIColor] = [.red, .green, .blue, .orange, .purple]
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        setupLabels()
+        setupCollectionView()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        let collectionViewHeight: CGFloat = cardHeight
+        
+        titleLabel.frame = CGRect(x: 20, y: 20, width: contentView.bounds.width - 40, height: 30)
+        subtitleLabel.frame = CGRect(x: 20, y: titleLabel.frame.maxY + 8, width: contentView.bounds.width - 40, height: 20)
+        collectionView.frame = CGRect(x: 20, y: subtitleLabel.frame.maxY + 8, width: contentView.bounds.width - 40, height: collectionViewHeight)
+    }
+    
+    func setupLabels() {
+        titleLabel = UILabel()
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 18)
+        contentView.addSubview(titleLabel)
+        
+        subtitleLabel = UILabel()
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.font = UIFont.systemFont(ofSize: 14)
+        contentView.addSubview(subtitleLabel)
+    }
+    
+    func setupCollectionView() {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 8
+        layout.itemSize = CGSize(width: cardWidth, height: cardHeight)
+        
+        collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.isPagingEnabled = true
+        collectionView.register(MainOffersCarouselCollectionViewCell.self, forCellWithReuseIdentifier: "MainOffersCarouselCollectionViewCell")
+        contentView.addSubview(collectionView)
+        
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            collectionView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 8), // Ajuste aqui
+            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
+        ])
+    }
+}
+
