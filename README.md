@@ -337,50 +337,13 @@ class MainOffersCarouselCollectionViewCell: UICollectionViewCell, WayViewCode {
 
 
 
-// OffersSantaCollectionViewCell
-class OffersSantaCollectionViewCell: UICollectionViewCell, WayViewCode {
-
-    static let identifier = "OffersSantaCollectionViewCell"
-    
-    lazy var mainView: UIView = {
-        let view = UIView()
-        view.layer.cornerRadius = 10
-        view.layer.masksToBounds = true
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func buildViewHierarchy() {
-        addSubview(mainView)
-    }
-    
-    func setupConstraints() {
-        NSLayoutConstraint.activate([
-            mainView.topAnchor.constraint(equalTo: topAnchor),
-            mainView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            mainView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            mainView.bottomAnchor.constraint(equalTo: bottomAnchor),
-        ])
-    }
-}
-
-// OffersSantaTableViewCell
 class OffersSantaTableViewCell: UITableViewCell {
 
-    var collectionView: UICollectionView!
     var titleLabel: UILabel!
     var subtitleLabel: UILabel!
-    var santaOffers: [Offer] = [] // Replace 'Offer' with your actual offer model
-    
+    var santaCollectionView: UICollectionView!
+    var santaColors: [UIColor] = [.red, .green, .blue, .orange, .purple]
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -388,7 +351,7 @@ class OffersSantaTableViewCell: UITableViewCell {
         setupConstraints()
         setupCollectionView()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -410,7 +373,7 @@ class OffersSantaTableViewCell: UITableViewCell {
     func setupConstraints() {
         NSLayoutConstraint.activate([
             // titleLabel
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
@@ -422,51 +385,67 @@ class OffersSantaTableViewCell: UITableViewCell {
             // ... (other constraints for collectionView)
         ])
     }
+
+    func setupCollectionView() {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 10
+        layout.itemSize = CGSize(width: 162, height: 182)
+        
+        santaCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        santaCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        santaCollectionView.showsHorizontalScrollIndicator = false
+        santaCollectionView.delegate = self
+        santaCollectionView.dataSource = self
+        santaCollectionView.register(SantaOffersCollectionViewCell.self, forCellWithReuseIdentifier: SantaOffersCollectionViewCell.identifier)
+        contentView.addSubview(santaCollectionView)
+        
+        NSLayoutConstraint.activate([
+            santaCollectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            santaCollectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            santaCollectionView.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 8),
+            santaCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+        ])
+    }
 }
 
-// NewInteractOffersViewController
+
+
+
+
+
+
+
+
 class NewInteractOffersViewController: UIViewController {
 
-    var mainOffers: [Offer] = [] // Replace 'Offer' with your actual offer model
-    var santaOffers: [Offer] = [] // Replace 'Offer' with your actual offer model
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupTableView()
-    }
-
+    var mainOffers: [Offer] = [] // Replace with your data
+    var santaOffers: [Offer] = [] // Replace with your data
+    
+    // ... (other methods and properties)
+    
     func setupTableView() {
         self.offersScreen?.tableView.register(MainOffersCarouselTableViewCell.self, forCellReuseIdentifier: "MainOffersCarouselTableViewCell")
         self.offersScreen?.tableView.register(OffersSantaTableViewCell.self, forCellReuseIdentifier: "OffersSantaTableViewCell")
         self.offersScreen?.tableView.delegate = self
         self.offersScreen?.tableView.dataSource = self
     }
+    
+    // ... (other methods)
 }
 
-extension NewInteractOffersViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2 // One for MainOffersCarouselTableViewCell, one for OffersSantaTableViewCell
-    }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "MainOffersCarouselTableViewCell", for: indexPath) as! MainOffersCarouselTableViewCell
-            // Configure 'cell' for mainOffers
-            return cell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "OffersSantaTableViewCell", for: indexPath) as! OffersSantaTableViewCell
-            cell.santaOffers = santaOffers
-            cell.titleLabel.text = "Santa Offers Title"
-            cell.subtitleLabel.text = "Subtitle for Santa Offers"
-            return cell
-        }
-    }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.row == 0 {
-            // Calculate height for mainOffers cell
-        } else {
-            return 182 + 20 // Height for OffersSantaTableViewCell
-        }
+
+func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    if indexPath.row == 0 {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MainOffersCarouselTableViewCell", for: indexPath) as! MainOffersCarouselTableViewCell
+        // Configure 'cell' for mainOffers
+        return cell
+    } else {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "OffersSantaTableViewCell", for: indexPath) as! OffersSantaTableViewCell
+        cell.titleLabel.text = "Santa Offers Title"
+        cell.subtitleLabel.text = "Subtitle for Santa Offers"
+        return cell
     }
 }
